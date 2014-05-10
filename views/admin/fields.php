@@ -18,14 +18,11 @@ $(function() {
 });
 </script>
 
-<div class='sheet' id='profilesSheet'>
-<div class='sheetContent' id='adminProfiles'>
+<div class='area' id='adminProfiles'>
 
 <h3><?php echo T("Manage Profile Fields"); ?></h3>
 
-<div class='sheetBody'>
-
-<div class='section'>
+<p><a href='<?php echo URL("admin/profiles/create"); ?>' class='button' id='addFieldButton'><i class='icon-plus-sign'></i> <?php echo T("Create Field"); ?></a></p>
 
 <ul class='list'>
 <?php foreach ($fields as $field): ?>
@@ -36,11 +33,4 @@ $(function() {
 <?php endforeach; ?>
 </ul>
 
-<a href='<?php echo URL("admin/profiles/create"); ?>' class='button' id='addFieldButton'><i class='icon-plus-sign'></i> <?php echo T("Create Field"); ?></a>
-
-</div>
-
-</div>
-
-</div>
 </div>
