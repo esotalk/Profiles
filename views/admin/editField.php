@@ -52,6 +52,7 @@ $field = $data["field"];
 <div class='checkboxField'>
 <label class='checkbox'><?php echo $form->checkbox("showOnPosts"); ?> <?php echo T("Show field on posts"); ?></label>
 <label class='checkbox'><?php echo $form->checkbox("hideFromGuests"); ?> <?php echo T("Hide field from guests"); ?></label>
+<label class='checkbox'><?php echo $form->checkbox("searchable"); ?> <?php echo T("Searchable in member list"); ?> (<code>field:value</code>)</label>
 </div>
 </li>
 

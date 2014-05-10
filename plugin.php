@@ -38,6 +38,7 @@ class ETPlugin_Profiles extends ETPlugin {
 			->column("type", "enum('text','textarea','select')", "text")
 			->column("showOnPosts", "tinyint(1)", 0)
 			->column("hideFromGuests", "tinyint(1)", 0)
+			->column("searchable", "tinyint(1)", 0)
 			->column("position", "int(11)", 0)
 			->key("fieldId", "primary")
 			->exec(false);
@@ -89,7 +90,8 @@ class ETPlugin_Profiles extends ETPlugin {
 			"fieldId"     => 2,
 			"name"        => "Location",
 			"type"        => "text",
-			"showOnPosts" => true
+			"showOnPosts" => true,
+			"searchable"  => true
 		));
 	}
 
@@ -261,6 +263,49 @@ class ETPlugin_Profiles extends ETPlugin {
 				$input = $form->input($key, "text");
 		}
 		return $input.($field["description"] ? "<br><small>".$field["description"]."</small>" : "");
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Allow searching the member list by Profile fields
+	|--------------------------------------------------------------------------
+	*/
+
+	// On the settings/general page, add a field to the form for each of the custom profile fields.
+	public function handler_membersController_parseTerms($sender, &$terms, $sql, &$conditions)
+	{
+		$model = ET::getInstance("profileFieldModel");
+		$fields = $model->get(array("searchable" => 1));
+
+		foreach ($terms as $k => $term) {
+
+			$term = strtolower(trim($term));
+
+			foreach ($fields as $field) {
+				$prefix = strtolower($field["name"]).":";
+
+				if (strpos($term, $prefix) === 0) {
+
+					// Find all member IDs that have field data matching this term.
+					$rows = ET::SQL()
+						->select("DISTINCT memberId")
+						->from("profile_data")
+						->where("fieldId", $field["fieldId"])
+						->where("data LIKE :value")
+						->bind(":value", "%".substr($term, strlen($prefix))."%")
+						->exec()
+						->allRows("memberId");
+					$ids = array_keys($rows);
+
+					// Add these members to the results.
+					$conditions[] = "memberId IN (:field$k)";
+					$sql->bind(":field$k", count($ids) ? $ids : 0);
+
+					unset($terms[$k]);
+					break;
+				}
+			}
+		}
 	}
 
 }

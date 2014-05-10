@@ -54,7 +54,8 @@ class ProfilesAdminController extends ETAdminController {
 				"description" => $form->getValue("description"),
 				"type" => $form->getValue("type"),
 				"showOnPosts" => (bool)$form->getValue("showOnPosts"),
-				"hideFromGuests" => (bool)$form->getValue("hideFromGuests")
+				"hideFromGuests" => (bool)$form->getValue("hideFromGuests"),
+				"searchable" => (bool)$form->getValue("searchable")
 			);
 
 			$model = $this->model();
@@ -93,6 +94,7 @@ class ProfilesAdminController extends ETAdminController {
 				"type" => $form->getValue("type"),
 				"showOnPosts" => (bool)$form->getValue("showOnPosts"),
 				"hideFromGuests" => (bool)$form->getValue("hideFromGuests"),
+				"searchable" => (bool)$form->getValue("searchable"),
 				"position" => $model->count()
 			);
 
