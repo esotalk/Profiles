@@ -292,7 +292,7 @@ class ETPlugin_Profiles extends ETPlugin {
 						->from("profile_data")
 						->where("fieldId", $field["fieldId"])
 						->where("data LIKE :value")
-						->bind(":value", "%".substr($term, strlen($prefix))."%")
+						->bind(":value", "%".trim(substr($term, strlen($prefix)))."%")
 						->exec()
 						->allRows("memberId");
 					$ids = array_keys($rows);
