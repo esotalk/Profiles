@@ -80,19 +80,23 @@ class ETPlugin_Profiles extends ETPlugin {
 	protected function createDefaultFields()
 	{
 		$model = ET::getInstance("profileFieldModel");
-		$model->create(array(
-			"fieldId"     => 1,
-			"name"        => "About",
-			"description" => "Write something about yourself.",
-			"type"        => "textarea"
-		));
-		$model->create(array(
-			"fieldId"     => 2,
-			"name"        => "Location",
-			"type"        => "text",
-			"showOnPosts" => true,
-			"searchable"  => true
-		));
+		if ( ! $model->getById(1)) {
+			$model->create(array(
+				"fieldId"     => 1,
+				"name"        => "About",
+				"description" => "Write something about yourself.",
+				"type"        => "textarea"
+			));
+		}
+		if ( ! $model->getById(2)) {
+			$model->create(array(
+				"fieldId"     => 2,
+				"name"        => "Location",
+				"type"        => "text",
+				"showOnPosts" => true,
+				"searchable"  => true
+			));
+		}
 	}
 
 	public function __construct($rootDirectory)
