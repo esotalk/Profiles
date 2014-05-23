@@ -251,8 +251,11 @@ class ETPlugin_Profiles extends ETPlugin {
 	// When a profile field is saved, save it to the database.
 	public function saveField($form, $key, &$preferences)
 	{
+		// Limit the value to 1000 characters.
+		$value = substr($form->getValue($key), 0, 1000);
+
 		$model = ET::getInstance("profileFieldModel");
-		$model->setData(ET::$session->userId, substr($key, 8), $form->getValue($key));
+		$model->setData(ET::$session->userId, substr($key, 8), $value);
 	}
 
 	// Render a custom profile field in the settings form.
