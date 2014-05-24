@@ -345,6 +345,19 @@ class ETPlugin_Profiles extends ETPlugin {
 	|--------------------------------------------------------------------------
 	*/
 
+	// Add gambits for each of the searchable profile fields.
+	public function handler_membersController_constructGambitsMenu($controller, &$gambits)
+	{
+		$model = ET::getInstance("profileFieldModel");
+		$fields = $model->get(array("searchable" => 1));
+
+		$gambits["profile"] = array();
+
+		foreach ($fields as $field) {
+			addToArrayString($gambits["profile"], strtolower($field["name"]).": ?", array("gambit-profile-".$field["fieldId"]), 1);
+		}
+	}
+
 	// On the settings/general page, add a field to the form for each of the custom profile fields.
 	public function handler_membersController_parseTerms($sender, &$terms, $sql, &$conditions)
 	{
