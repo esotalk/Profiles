@@ -50,12 +50,13 @@ class ProfilesAdminController extends ETAdminController {
 		if ($form->validPostBack("save")) {
 
 			$data = array(
-				"name" => $form->getValue("name"),
-				"description" => $form->getValue("description"),
-				"type" => $form->getValue("type"),
-				"showOnPosts" => (bool)$form->getValue("showOnPosts"),
+				"name"           => $form->getValue("name"),
+				"description"    => $form->getValue("description"),
+				"type"           => $form->getValue("type"),
+				"options"        => $form->getValue("options"),
+				"showOnPosts"    => (bool)$form->getValue("showOnPosts"),
 				"hideFromGuests" => (bool)$form->getValue("hideFromGuests"),
-				"searchable" => (bool)$form->getValue("searchable")
+				"searchable"     => (bool)$form->getValue("searchable")
 			);
 
 			$model = $this->model();
@@ -89,13 +90,14 @@ class ProfilesAdminController extends ETAdminController {
 			$model = $this->model();
 
 			$data = array(
-				"name" => $form->getValue("name"),
-				"description" => $form->getValue("description"),
-				"type" => $form->getValue("type"),
-				"showOnPosts" => (bool)$form->getValue("showOnPosts"),
+				"name"           => $form->getValue("name"),
+				"description"    => $form->getValue("description"),
+				"type"           => $form->getValue("type"),
+				"options"        => $form->getValue("options"),
+				"showOnPosts"    => (bool)$form->getValue("showOnPosts"),
 				"hideFromGuests" => (bool)$form->getValue("hideFromGuests"),
-				"searchable" => (bool)$form->getValue("searchable"),
-				"position" => $model->count()
+				"searchable"     => (bool)$form->getValue("searchable"),
+				"position"       => $model->count()
 			);
 
 			$model->create($data);

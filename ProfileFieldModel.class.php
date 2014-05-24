@@ -56,4 +56,30 @@ class ProfileFieldModel extends ETModel {
 	{
 		return $this->delete(array("f.fieldId" => $id));
 	}
+
+	public function update($values, $wheres = array())
+	{
+		if (in_array($values["type"], array("select", "radios", "checkboxes")))
+			$this->validate("options", $values["options"], array($this, "validateOptions"));
+
+		if ($this->errorCount()) return false;
+
+		return parent::update($values, $wheres);
+	}
+
+	public function create($values, $wheres = array())
+	{
+		if (in_array($values["type"], array("select", "radios", "checkboxes")))
+			$this->validate("options", $values["options"], array($this, "validateOptions"));
+
+		if ($this->errorCount()) return false;
+
+		return parent::create($values);
+	}
+
+	public function validateOptions($options)
+	{
+		$options = trim($options);
+		if (!strlen($options)) return "empty";
+	}
 }

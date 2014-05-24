@@ -35,7 +35,8 @@ class ETPlugin_Profiles extends ETPlugin {
 			->column("fieldId", "int(11) unsigned", false)
 			->column("name", "varchar(31)", false)
 			->column("description", "varchar(255)")
-			->column("type", "enum('text','textarea','select')", "text")
+			->column("type", "enum('text','textarea','select','radios','checkboxes','member')", "text")
+			->column("options", "text")
 			->column("showOnPosts", "tinyint(1)", 0)
 			->column("hideFromGuests", "tinyint(1)", 0)
 			->column("searchable", "tinyint(1)", 0)
@@ -161,6 +162,16 @@ class ETPlugin_Profiles extends ETPlugin {
 					$field["data"] = ET::formatter()->init($field["data"])->format()->get();
 					break;
 
+				case "checkboxes":
+					$items = explode("\n", $field["data"]);
+					$items = array_map("sanitizeHTML", $items);
+					$field["data"] = implode("<br>", $items);
+					break;
+
+				case "member":
+					$field["data"] = "<a href='".URL("member/name/".urlencode($field["data"]))."'>".sanitizeHTML($field["data"])."</a>";
+					break;
+
 				default:
 					$field["data"] = ET::formatter()->init($field["data"])->inline(true)->format()->get();
 			}
@@ -237,10 +248,19 @@ class ETPlugin_Profiles extends ETPlugin {
 		$fields = $model->getData(ET::$session->userId);
 		$plugin = $this; // for use in closures
 
+		$sender->addJSFile("core/js/autocomplete.js");
+
 		foreach ($fields as $field) {
 			$key = "profile_".$field["fieldId"];
 			$form->addSection($key, $field["name"]);
-			$form->setValue($key, $field["data"]);
+			if ($field["type"] == "checkboxes") {
+				$data = explode("\n", $field["data"]);
+				foreach ($data as $checkbox) {
+					$form->setValue($key."[".$checkbox."]", true);
+				}
+			} else {
+				$form->setValue($key, $field["data"]);
+			}
 			$form->addField($key, $key, function($form) use ($plugin, $field)
 			{
 				return $plugin->field($form, $field);
@@ -251,11 +271,26 @@ class ETPlugin_Profiles extends ETPlugin {
 	// When a profile field is saved, save it to the database.
 	public function saveField($form, $key, &$preferences)
 	{
+		$value = $form->getValue($key);
+
+		if (is_array($value)) $value = implode("\n", array_keys($value));
+
 		// Limit the value to 1000 characters.
-		$value = substr($form->getValue($key), 0, 1000);
+		$value = substr($value, 0, 1000);
 
 		$model = ET::getInstance("profileFieldModel");
 		$model->setData(ET::$session->userId, substr($key, 8), $value);
+	}
+
+	protected function parseOptions($options)
+	{
+		$lines = explode("\n", $options);
+		$options = array();
+		foreach ($lines as $line) {
+			$line = trim($line);
+			$options[$line] = $line;
+		}
+		return $options;
 	}
 
 	// Render a custom profile field in the settings form.
@@ -263,9 +298,41 @@ class ETPlugin_Profiles extends ETPlugin {
 	{
 		$key = "profile_".$field["fieldId"];
 		switch ($field["type"]) {
+
 			case "textarea":
 				$input = $form->input($key, "textarea", array("rows" => 3, "style" => "width:500px"));
 				break;
+
+			case "select":
+				$options = $this->parseOptions($field["options"]);
+				$input = $form->select($key, $this->parseOptions($field["options"]));
+				break;
+
+			case "radios":
+				$options = $this->parseOptions($field["options"]);
+				$input = "<div class='checkboxGroup'>";
+				foreach ($options as $option) {
+					$input .= "<label class='radio'>".$form->radio($key, $option)." ".$option."</label>";
+				}
+				$input .= "</div>";
+				break;
+
+			case "checkboxes":
+				$options = $this->parseOptions($field["options"]);
+				$input = "<div class='checkboxGroup'>";
+				foreach ($options as $option) {
+					$input .= "<label class='checkbox'>".$form->checkbox($key."[".$option."]")." ".$option."</label>";
+				}
+				$input .= "</div>";
+				break;
+
+			case "member":
+				$input = $form->input($key, "text");
+				$input .= '<script>new ETAutoCompletePopup($("input[name='.$key.']"), false, function(member) {
+					$("input[name='.$key.']").val(member.name);
+				});</script>';
+				break;
+
 			default:
 				$input = $form->input($key, "text");
 		}

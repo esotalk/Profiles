@@ -42,7 +42,24 @@ $field = $data["field"];
 
 <li>
 <label><?php echo T("Input type"); ?></label>
-<?php echo $form->select("type", array("text" => "Text", "textarea" => "Textarea")); ?>
+<?php echo $form->select("type", array(
+	"text"       => T("Text"), 
+	"textarea"   => T("Textarea"),
+	"select"     => T("Select"),
+	"radios"     => T("Radio buttons"),
+	"checkboxes" => T("Checkboxes"),
+	"member"     => T("Member reference")
+)); ?>
+<div class='options'>
+	<?php echo $form->input("options", "textarea", array("placeholder" => T("Enter one option per line"), "style" => "height:100px")); ?>
+</div>
+<script>
+$(function() {
+	$("select[name=type]").change(function() {
+		$(".options").toggle(["select", "radios", "checkboxes"].indexOf($(this).val()) != -1);
+	}).change();
+});
+</script>
 </li>
 
 <li class='sep'></li>
