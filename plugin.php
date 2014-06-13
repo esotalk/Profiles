@@ -354,7 +354,7 @@ class ETPlugin_Profiles extends ETPlugin {
 		$gambits["profile"] = array();
 
 		foreach ($fields as $field) {
-			addToArrayString($gambits["profile"], strtolower($field["name"]).": ?", array("gambit-profile-".$field["fieldId"]), 1);
+			addToArrayString($gambits["profile"], mb_strtolower($field["name"]).": ?", array("gambit-profile-".$field["fieldId"]), 1);
 		}
 	}
 
