@@ -385,7 +385,7 @@ class ETPlugin_Profiles extends ETPlugin {
 					$ids = array_keys($rows);
 
 					// Add these members to the results.
-					$conditions[] = "memberId IN (:field$k)";
+					$conditions[] = "m.memberId IN (:field$k)";
 					$sql->bind(":field$k", count($ids) ? $ids : 0);
 
 					unset($terms[$k]);
