@@ -276,7 +276,7 @@ class ETPlugin_Profiles extends ETPlugin {
 		if (is_array($value)) $value = implode("\n", array_keys($value));
 
 		// Limit the value to 1000 characters.
-		$value = substr($value, 0, 1000);
+		$value = mb_substr($value, 0, 1000, "UTF-8");
 
 		$model = ET::getInstance("profileFieldModel");
 		$model->setData(ET::$session->userId, substr($key, 8), $value);
